@@ -1,0 +1,70 @@
+package 分治.例题;
+
+import java.util.Random;
+
+public class LinearSelect {
+    //线性时间选择
+    //基本目标：找出一个数组中第k大的元素。
+    /*思路：我们在数组中随机产生一个数，以此作为划分的依据，（randomizedPartition，）。
+    并依照这个数把数组进行初步的划分，即把基本元素小的都放到左边，把比基本元素大的都放到右边。并放回中间元素（即
+    依据元素）的位置。（Partition）。根据这个位置，我们去看左边有多少个数，要是k小于这个数，则第k大的数肯定在左边
+    反之则在右边。（RandomizedSelect）。这样进行下去，如果最左边的索引等于右边索引，则代表已经找到了。
+    注意：swap函数里面的参数应该是数组，不然不起作用
+     */
+    public int randomizedSelect(int []a,int p,int r,int k){
+//        k--;
+        if(p==r){
+            return a[p];
+        }
+        int pos = randomizedPartition(a,p,r);
+        if(k==pos-p+1){
+            return a[pos];
+        }
+        else if(k<pos-p+1){
+            //说明在左边，则对左边再次进行划分
+            return randomizedSelect(a,p,pos-1,k);
+        }
+        else{
+            return randomizedSelect(a,pos+1,r,k-pos+p-1);
+        }
+    }
+
+    public int randomizedPartition(int a[],int p,int r){
+        int i = random(p,r);
+        //把基准元素放到第一位
+        swap(a,p,i);
+        //接下来是把数组进行划分
+        return partition(a,p,r);
+    }
+
+    public int partition(int []a,int p,int r){
+        //把数组进行初步排序，并返回中间基准元素的位置
+        int i = p;
+        int j = r;
+        int prin = a[i];
+        while(j>i){
+            //j先动
+            while(a[j]>=prin&&j>i){
+                j--;
+            }
+            while(a[i]<=prin&&j>i){
+                i++;
+            }
+            swap(a,i,j);
+            //把元素调整位置
+        }
+        swap(a,p,i);  //把基准元素放到中间i和j相遇的位置上
+        return i;
+    }
+
+    public void swap(int []a,int i,int j){
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+    public int random(int i,int j){
+        int num = (int)Math.round(Math.random()*(j-i)+i);
+        return num;
+    }
+}
